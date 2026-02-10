@@ -6,7 +6,6 @@ import ru.practicum.moviehub.api.MovieAlreadyExistsException;
 import ru.practicum.moviehub.api.MovieNotFoundException;
 import ru.practicum.moviehub.model.Movie;
 import ru.practicum.moviehub.store.MoviesStore;
-
 import com.sun.net.httpserver.HttpExchange;
 
 import java.io.IOException;
@@ -59,18 +58,28 @@ public class MoviesHandler extends BaseHttpHandler {
                 List<String> details = new ArrayList<>();
                 boolean valid = true;
 
-                if (title == null || title.isBlank()) { valid = false; details.add("название не должно быть пустым"); }
-                if (title != null && title.length() > 100) { valid = false; details.add("название не должно превышать 100 символов"); }
-                if (year < 1888 || year > currentYear + 1) { valid = false; details.add("год должен быть между 1888 и " + (currentYear + 1)); }
+                if (title == null || title.isBlank()) {
+                    valid = false;
+                    details.add("название не должно быть пустым");
+                }
+
+                if (title != null && title.length() > 100) {
+                    valid = false;
+                    details.add("название не должно превышать 100 символов");
+                }
+
+                if (year < 1888 || year > currentYear + 1) {
+                    valid = false;
+                    details.add("год должен быть между 1888 и " + (currentYear + 1));
+                }
 
                 if (!valid) {
                     sendJson(ex, 422, gson.toJson(new ErrorResponse(422, "Ошибка валидации", details)));
                     return;
                 }
 
-                moviesStore.addMovie(movie);
+                moviesStore.addMovies(movie);
                 sendJson(ex, 201, gson.toJson(movie));
-
             } else if (method.equalsIgnoreCase("DELETE") && path.matches("/movies/\\d+")) {
                 int id = Integer.parseInt(path.split("/")[2]);
                 moviesStore.deleteMovieById(id);
