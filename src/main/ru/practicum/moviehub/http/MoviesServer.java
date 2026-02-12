@@ -8,10 +8,11 @@ import java.net.InetSocketAddress;
 
 public class MoviesServer {
     private final HttpServer server;
+    private final MoviesStore store; // теперь храним store как поле
 
     public MoviesServer() {
         try {
-            MoviesStore store = new MoviesStore();
+            store = new MoviesStore();
             server = HttpServer.create(new InetSocketAddress(8080), 0);
             server.createContext("/movies", new MoviesHandler(store));
         } catch (IOException e) {
@@ -27,5 +28,9 @@ public class MoviesServer {
     public void stop() {
         server.stop(0);
         System.out.println("Сервер остановлен");
+    }
+
+    public MoviesStore getMoviesStore() {
+        return store;
     }
 }
